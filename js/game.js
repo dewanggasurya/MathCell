@@ -1,0 +1,381 @@
+var workspace = $("#playground");
+var operation = "";
+var opState = false;
+var opScore = 0;
+var objCount = 0;
+var count = 0;
+var strExistedNumber = "";
+var clickedCell = new Array();
+var standardScore = 25;
+var paused = false;
+var intID;
+var tmpText = "";
+var maxCells = 30;
+var level = 1;
+var levelUpOn = 200;
+
+function randomMove(){
+	if(!paused){
+		$("*.cell").each(function(){            
+			var width = workspace.width();
+			var height = workspace.height();   
+			
+			var oWidth = $(this).width();
+			var oHeight = $(this).height();
+		 
+			var x = Math.floor((Math.random()*(width-oWidth-50))+1);
+			var y = Math.floor((Math.random()*(height-oHeight-50))+1);
+			$(this).animate({left:x, top:y}, 8000);
+		});    
+	}
+}
+
+function playSound(id){
+	var beep = $(id)[0];
+	beep.play();
+}
+
+function createCell(newCell){	
+	if(maxCells == getCellCount()){		
+		$('#overlay-over').fadeIn();
+		$('#operation').fadeOut();
+		$('#score-pause b').html($("#score").html());
+		$('#name').focus();
+	}else{
+		var val = Math.floor((Math.random()*9)+1);
+		var width = workspace.width();
+		var height = workspace.height();    
+		
+		//random cell position
+		//var x = Math.floor((Math.random()*(width-50))+1);
+		//var y = Math.floor((Math.random()*(height-50))+1);	
+		
+		if(newCell){
+			var x = Math.floor((Math.random()*(width-100))+1);
+			var y = Math.floor((Math.random()*(height-100))+1);
+		}else{
+			var random = Math.floor((Math.random()*($('.cell').size())));
+			var x = $('.cell').eq(random).css('left');	
+			var y = $('.cell').eq(random).css('top');	
+		}
+		
+		var color = new Array("#5CACC4", "#8CD19D", "#CEE879", "#FCB653", "#FF5254", "#556270", "#4ECDC4", "#C7F464", "#FF6B6B", "#C44D58");
+		var cell = $("<div />").css({
+						'left':x,
+						'top':y, 
+						'background':color[Math.floor((Math.random()*(color.length)))],
+						'display':'none'
+					}).attr({
+						'class':'cell cell'+objCount,
+						'rel':objCount,
+						'onclick':'numberClick(this)'
+					}).text(val);
+		if(!paused){
+			workspace.append(cell); 
+			
+			//Grow cell
+			//cell.show('scale',{},500);
+			//cell.fadeIn();
+			
+			if(newCell){
+				cell.fadeIn();
+			}else{			
+				playSound('#split');
+				cell.show();
+			}
+			objCount++;				
+			$('#counter').html($('.cell').size());
+
+			var temp = val.toString();
+			if(strExistedNumber.indexOf(temp) == -1){
+				strExistedNumber += ('|'+temp);	
+				if(strExistedNumber.length == 2){
+					strExistedNumber = strExistedNumber.substring(1,strExistedNumber.length);
+				}
+			}			
+			intID = setInterval("randomMove()",1000);
+		}	
+	}
+}
+
+function numberClick(obj){
+	var hasClass = $(obj).hasClass('cell-clicked');
+	if(!opState && !hasClass){
+		var val = $(obj).html();
+		var rel = $(obj).attr('rel');
+		operation += val;
+		opState = true;	
+		clickedCell[count++] = rel;
+		$(obj).addClass('cell-clicked');
+		var txt = $('#operation').html();
+		$('#operation').html(txt+val);
+	}else{
+		playSound('#error');
+		setInfo('choose operator', 'error');
+	}
+	
+}
+
+function generateAnswer(){
+	var number = strExistedNumber.split("|");	
+	var answer = new Array();	
+	var op = new Array("+","-","*","/");
+	var question="";	
+	
+	/*Random question count*/
+	len1 = 5;/*Math.floor((Math.random()*5)+1);*/
+	len1 = (len1==1)?2:len1;
+	
+	for(i=0; i<len1; i++){		
+		question = "";				
+		
+		/*Random operator count*/
+		len2 = Math.floor((Math.random()*level)+1);
+		len2 = (len2==1)?2:len2;
+		
+		for(j=0; j<len2; j++){			
+			op = shuffle(op);			
+			number = shuffle(number);
+			question += number[0];
+			question += op[0];
+		}
+		question = question.substring(0, question.length-1);
+		answer[i] = question;
+	}
+	question="";
+	/*
+	op = shuffle(op);
+	for(i=0; i<op.length; i++){
+		question += (op[i]+"\n");
+	}
+	question += "---------------\n";
+	number = shuffle(number);
+	for(i=0; i<number.length; i++){
+		question += (number[i]+"\n");
+	}
+	question += "---------------\n";
+	alert(question+strExistedNumber);
+	
+	question = "";
+	for(i=0; i<answer.length; i++){
+		question += (eval(answer[i])+"\n");
+	}	
+		
+	question += "---------------\n";
+	*/
+	for(i=0; i<7; i++){		
+		if(i>=len1){
+			if(Math.floor((Math.random()*2)) == 0){
+				/*Generate wrong answer*/
+			rndAdd = Math.floor((Math.random()*9)+1);
+			rndAnswer = Math.floor((Math.random()*len1));
+			answer[i] = eval(answer[rndAnswer])+rndAdd;
+			}else{
+				answer[i] = Math.floor((Math.random()*100)+1);
+			}
+		}
+		question += (answer[i]+"\n");
+		tmp = eval(answer[i]);
+		if(isInt(tmp) == 0){
+			answer[i] = tmp.toPrecision(Math.floor((Math.random()*2)+1));
+		}else{
+			answer[i] = tmp;			
+		}		
+	}
+	
+	answer = shuffle(answer);
+	for(i=0; i<7; i++){
+		tmp = answer[i].toString();
+		if(tmp == '1e+1'){
+			tmp = '10';
+		}else if(tmp == 'NaN'){
+			tmp = Math.floor((Math.random()*100)+1);
+		}
+		$('.result'+(i+1)+' span').html(tmp);
+	}
+	//alert(question);
+}
+
+function shuffle(o){ 
+	for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+	return o;
+ }
+ 
+ function isInt(n) {
+   return n % 1 === 0;
+}
+
+function countOperator(strOperation){
+	var count = 0;
+	var strOpr = "+*/-";
+	for(i=0; i<strOperation.length; i++){
+		if(strOpr.indexOf(strOperation.charAt(i)) != -1){
+			count++;
+		}
+	}
+	return count;
+}
+
+function addScore(score){
+	var scr = parseInt($("#score").html());
+	$("#score").html(scr+score);
+}
+
+function substractCellCount(count){
+	var c = parseInt($("#counter").html());
+	$("#counter").html(c-count);
+}
+
+function getScore(){
+	var scr = parseInt($("#score").html());
+	return scr;
+}
+
+function getCellCount(){
+	var c = parseInt($("#counter").html());
+	return c;
+}
+
+function setInfo(info, category){
+	var color="#000";
+	if(category == 'error')
+		color = '#FF5254';
+	if(category == 'info')
+		color = '#8CD19D';
+	if(category == 'notification')
+		color = '#5CACC4';
+		
+	var cInfo = '.info';
+	$(cInfo).html(info);
+	$(cInfo).css('color',color);
+	$(cInfo).show();
+	$(cInfo).animate({top:5, opacity:0}, 3000, function(){
+		$(cInfo).css({
+			'top':'25%',
+			'opacity':'1',
+			'display':'none',			
+		});
+	});	
+}
+
+function postScore(name, level, score){
+	if(name==''){
+		name = 'Anonym';
+	}
+	$('#loading').fadeIn();
+	$.post('../request/postScore.php',{n:name, l:level,s:score}, function(data){
+		if(data.result==1){
+			$('#loading').fadeOut();
+			$('#name-place').html('<span id="name-pause">HI !!!,<b>'+name+'</b></span>');
+			if(data.highscore==1){				
+				$('#name-place').append('</br><span id="name-pause">YOU GET THE HIGHSCORE</span>');
+			}
+		}
+	},'json');
+}
+
+$(function(){        	
+	//alert(width+","+height);	
+	createCell(true);
+	createCell(true);
+	createCell(true);
+	generateAnswer();
+	setInterval("createCell(false);",7000);
+	
+	$("#menu").click(function(){
+		$('#overlay-pause').fadeIn();
+		$('*.cell').stop();
+		paused = true;
+		clearInterval(intID);
+		$('#operation').fadeOut();
+		$('.result span').fadeOut();
+		$('#score-pause b').html($("#score").html());
+	});
+	
+	$(".resume").click(function(){
+		$('#overlay-pause').fadeOut();
+		$('#operation').fadeIn();
+		$('.result span').fadeIn();
+		randomMove();
+		generateAnswer();
+		paused = false;
+	});
+	
+	$(".replay").click(function(){
+		location.reload();
+	});
+	
+	
+	$("*#operator a").click(function(){
+		if(opState){
+			var op = $(this).attr('rel');		
+			operation += op;				
+			var txt = $('#operation').html();
+			$('#operation').html(txt+"<b>"+op+"</b>");
+			opState = false;
+			//alert(operation);
+		}else{
+			playSound('#error');
+			setInfo('choose cell first', 'error');
+		}
+	});
+	
+	$("#refresh-answer").click(function(){
+		$('.result span').slideUp('fast').slideDown('fast', generateAnswer());		
+	});
+	
+	$('.clear').click(function(){
+		operation = "";
+		$('*.cell-clicked').removeClass('cell-clicked');		
+		$('#operation').html("");
+	});
+	
+	$('*.result').click(function(){
+		var result = parseFloat($(this).find('span').html());
+		if(eval(operation) == result){
+			substractCellCount($('.cell-clicked').size());
+					
+			
+			for(i=0; i<count; i++){
+				$('.cell'+clickedCell[i]).fadeOut().remove();
+			}			
+						
+			count = countOperator(operation);
+			addScore(count*standardScore);
+			
+			//if((getScore()%levelUpOn)==0 && getScore()!=0){		 		
+			if((getScore()>=(levelUpOn*level)) && getScore()!=0){		 		
+				level++;
+				//alert(level);
+				setInfo('level up !!! +'+level, 'notification');
+			}else if(count==1){
+				setInfo('good', 'info');
+			}else{
+				setInfo(count+' combos', 'info');
+			}						
+			playSound('#success');			
+			generateAnswer();
+			operation = "";
+			opState = false;
+			$('#operation').html("");						
+		}else{
+			if(!opState){
+				playSound('#error');
+				setInfo('choose cell first', 'error');				
+			}else{
+				playSound('#error');
+				setInfo('you choose wrong answer', 'error');				
+			}
+		}
+	});
+	
+	
+	$('#name').keypress(function(event){
+		var name = $(this).val();
+		var score = $("#score").html();
+		$(this).attr('readonly');
+		if(event.which == 13){			
+			postScore(name, level, score);
+		}
+	});	
+});

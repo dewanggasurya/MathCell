@@ -1,0 +1,26 @@
+body{
+	background:url(../images/bg-yellow.png);
+	text-align:center;
+	font-family:"BebasNeueRegular";
+	color:#333;
+}
+
+h1{
+	font-size:72px;
+}
+
+table, embed{
+	margin:-20px auto 0;
+	font-size:36px;
+}
+
+table a{
+	text-decoration:none;
+	color:#333;
+}
+
+#exit{
+	font-size:36px;
+	text-decoration:none;
+	color:#333;
+}

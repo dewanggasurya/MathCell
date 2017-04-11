@@ -1,0 +1,270 @@
+@charset "UTF-8";
+@-ms-viewport {
+  width: device-width;
+}
+
+@viewport {
+  width: device-width;
+}
+
+body{
+    background:#986532;
+	margin:0;
+	padding:0;
+}
+
+#container{
+	width:100%;
+}
+
+#playground{    
+    background:url(../images/bg-yellow.png);
+    border:10px solid #333;
+    height: 79%;
+	position:absolute;
+	top:5%;
+    width: 90.5%;		
+	z-index:1;
+}
+
+#playground #score-board{
+	font-family:"Segoe UI";
+	font-size:20px;
+	margin:5px 10px 0;
+	position:relative;
+	float:right;
+	text-align:right;
+	z-index:3;	
+}
+
+#playground #score-board #score{
+	font-family:"Segoe UI";
+	font-size:36px;
+	margin:0;
+	text-align:right;
+}
+
+#playground .info{
+	position:absolute;
+	top:25%;
+	left:1%;
+	font-family:"BebasNeueRegular";
+	font-size:36px;
+}
+
+#overlay-pause, #overlay-over{
+	background:#333;	
+	height:100%;	
+	position :absolute;	
+	width:100%;
+	z-index:7;
+}
+
+#overlay-over{
+	opacity:0.5;	
+}
+
+#overlay-content{
+	color:#FFF;
+	font-family:"BebasNeueRegular";	
+	position:absolute;
+	top:30%;
+	margin:auto;
+	text-align:center;
+	width:100%;
+}
+
+#overlay-content input{
+	font-family:"BebasNeueRegular";	
+	font-size:36px;
+}
+
+#title-pause{
+	font-size:72px;
+}
+
+#menu-pause {
+	margin:-20px 0 0;
+	font-size:36px;
+}
+
+#score-pause, #name-pause{
+	font-size:36px;
+}
+
+#name-pause b{
+	color:#5CACC4;
+}
+
+#menu-pause a{
+	color:#FFF;	
+	text-decoration:none;
+}
+
+#menu-pause a.resume:hover{
+	color:#5CACC4;
+}
+
+#menu-pause a.replay:hover{
+	color:#8CD19D;
+}
+
+#menu-pause a.exit:hover{
+	color:#FF5254;	
+}
+
+#operation-text{
+	padding:0.3%;
+	position:absolute;
+	width:100%;
+	font-family:"Segoe UI";	
+	color:#FFF;
+	height:5%;
+	top:-8.5%;
+}
+
+#operator{
+	position: absolute;
+	top:-10px;
+	width:8.9%;
+	bottom:0px;
+	right:-9.7%;
+	z-index:3;	
+}
+
+#operator a, #result a{
+	background:#986532;
+	font-family:"Segoe UI";	
+}	
+
+#operator a{	
+	border-bottom: #333 solid 2px;
+	color:#FFF;
+	display:block;
+	font-size:24px;
+	height:8%;	
+	padding:19% 0 0;
+	text-align:center;	
+	text-decoration:none;	
+}
+
+#operator #counter-space{	
+	font-size:12px;
+	padding-bottom:2%;
+	height:auto;
+}
+
+#operator #counter{
+	margin:15% 0 0;
+	font-size:26px;
+	display:block;
+}
+
+#operator .clear{
+	border-top:2px #333 solid;
+}
+
+#operator a:hover{
+	background: #e8c5a2;
+}
+
+#result{
+	height:13%;
+	position:absolute;
+	top:87%;
+	z-index:4;
+	width:100%;
+}
+
+#result a{	
+	border-right: #333 solid 2px;
+	color:#FFF;
+	display:block;	
+	font-size:36px;
+	float:left;
+	height:68%;
+	padding:2% 2% 0;
+	text-align:center;	
+	text-decoration:none;	
+	width:5%;
+}
+
+#result #refresh-answer{
+	background:url(../images/refresh.png) center #986532 no-repeat;
+}
+
+#result #refresh-answer:hover{
+	background:url(../images/refresh.png) center #e8c5a2 no-repeat;
+}
+
+#result #menu{
+	background:url(../images/menu.png) center #986532 no-repeat;
+}
+
+#result #menu:hover{
+	background:url(../images/menu.png) center #e8c5a2 no-repeat;
+}
+
+#result #result-first{
+	
+}
+
+#result a:hover{
+	background: #e8c5a2;
+}
+
+.cell, .cell-clicked{
+    background:url(../images/amoeba.png) no-repeat !important ;
+	color: #000;
+	cursor: hand; 
+	cursor: pointer;
+	font-family:"BebasNeueRegular";
+	font-size:28px;	
+    height:64px;
+	right:0px;
+    width:64px;
+	padding:35px 10px 0px;
+    position: absolute;
+	text-align:center;
+	z-index:2;
+
+	-webkit-animation: play 3s steps(40) infinite;
+       -moz-animation: play 3s steps(40) infinite;
+        -ms-animation: play 3s steps(40) infinite;
+         -o-animation: play 3s steps(40) infinite;
+            animation: play 3s steps(40) infinite;
+
+	
+}
+
+.cell-clicked{
+	opacity:0.3;
+}
+.new-cell{
+	display:none;
+}
+
+@-webkit-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -10560px; }
+}
+
+@-moz-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -10560px; }
+}
+
+@-ms-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -10560px; }
+}
+
+@-o-keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -10560px; }
+}
+
+@keyframes play {
+   from { background-position:    0px; }
+     to { background-position: -10560px; }
+}
